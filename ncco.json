@@ -1,0 +1,18 @@
+[
+  {
+    "action":"talk",
+    "text":"Please wait while we connect you"
+  },
+  {
+    "action":"connect",
+    "endpoint":[
+      {
+        "type":"websocket",
+        "uri":"wss://example.ngrok.io/socket",
+        "content-type":"audio/l16;rate=16000",
+        "headers":{}
+      }
+    ]
+  }
+]
+

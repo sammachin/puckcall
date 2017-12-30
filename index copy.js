@@ -20,7 +20,7 @@ var config = require("./config.json")
 
 var micInstance = mic({
     rate: '16000',
-    channels: 1
+    channels: '1',
 });
 
 var chunker = new SizeChunker({
@@ -110,35 +110,7 @@ app.get('/ncco', function(req, res) {
 });
 
 
-var buf;
-function wssend(ws, data){
-    if (data.length == 640){
-        //console.log(Date.now(), " Sending: ", data.length, " Bytes")
-        try {
-           ws.send(data);
-        }
-        catch (e) {
-        console.log("Send Error: ", e)
-        };
-    }
-    else{
-        //console.log(Date.now(), " Buffering: ", data.length, " Bytes");
-        buf += data;
-        if (buf.length == 640){
-            //console.log(Date.now(), " Sending: ", data.length, " Bytes")
-            try {
-               ws.send(data);
-            }
-            catch (e) {
-            console.log("Send Error: ", e)
-            };
-            buf = null;
-        }
-    }
-    
-}
-    
-   
+
 
 
 // Handle the Websocket
@@ -150,9 +122,16 @@ app.ws('/socket', function(ws, req) {
                   sampleRate: 16000});
     var micInputStream = micInstance.getAudioStream();
     micInputStream.pipe(chunker);
-    setTimeout(function(){  micInstance.start(); }, 2000);
+    micInstance.start()
     chunker.on('data', function(chunk) {
-        wssend(ws, chunk.data);
+        try {
+           console.log(".");
+           ws.send(chunk.data);
+        }
+        catch (e) {
+            console.log("Mic Error: ", e)
+        }
+        
     });
     ws.on('message', function(msg) {
      if (isBuffer(msg)) {
@@ -166,11 +145,16 @@ app.ws('/socket', function(ws, req) {
      }
      else {
          console.log(msg);
-         var tonedata = tone(440, .8, volume = tone.MAX_16, sampleRate = 16000)
+         var tonedata = tone(440, 1, volume = tone.MAX_16, sampleRate = 16000)
          var i,j,sample,chunk = 640;
          for (i=0,j=tonedata.length; i<j; i+=chunk) {
              sample = tonedata.slice(i,i+chunk);
-             wssend(ws, sample);
+             try {
+                ws.send(sample);
+             }
+             catch (e) {
+                 console.log("Tone Error: ", e)
+             }
          }
      }
     });
@@ -184,3 +168,5 @@ app.ws('/socket', function(ws, req) {
  
 
 app.listen(8000, () => console.log('App listening on port 8000!'))
+
+     

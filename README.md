@@ -40,3 +40,9 @@ You have connected to ngrok for a tunnel to expose the server to the internet
 The final line is showing that the signal from your puck is being recieved, the first string is a random device id, the next is the RSSI (in dBm) and the 0 is the standbystate.
 
 Now press the button on the puck, the light should go green and you will see the puck status line with a `10` instead of `0` follwed by confirmation that it is calling your configured number.
+
+## Demo Videos
+Here's a video of the project running on a Pi
+https://drive.google.com/file/d/1eSnk0VZb9iHh3JJH75wnlFMPPev5mr_1/view?usp=sharing
+And this is a screen recording of it running on a mac
+https://drive.google.com/file/d/1HytTFUCu9KMqYbEkwh2pPsJIpCmkZIKZ/view

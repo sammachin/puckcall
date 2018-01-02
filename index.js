@@ -13,6 +13,10 @@ var tone = require('tonegenerator')
 
 var mic = require('mic');
 const Speaker = require('speaker');
+var speaker = new Speaker({
+                  channels: 1,          
+                  bitDepth: 16,         
+                  sampleRate: 16000});
 
 var chunkingStreams = require('chunking-streams');
 var SizeChunker = chunkingStreams.SizeChunker;
@@ -22,10 +26,15 @@ var micInstance = mic({
     rate: '16000',
     channels: 1
 });
-
 var chunker = new SizeChunker({
     chunkSize: 640 // must be a number greater than zero. 
 });
+
+var micInputStream = micInstance.getAudioStream();
+micInputStream.pipe(chunker);
+micInstance.start();
+micInstance.pause();
+
 
 var ngrok = require('ngrok');
 var ngrokurl;
@@ -98,14 +107,15 @@ function makeCall(){
 
 //Serve a Main Page
 app.get('/', function(req, res) {
-    res.send("Node Websocket");
+    res.send("Puckcall");
 });
 
 
 //Serve the NCCO on the /ncco answer URL
 app.get('/ncco', function(req, res) {
     var ncco = require('./ncco.json');
-    ncco[1]['endpoint'][0]['uri'] = "wss:"+ngrokurl.split(":")[1]+"/socket"
+    //ncco[1]['endpoint'][0]['uri'] = "wss:"+ngrokurl.split(":")[1]+"/socket" //Bug with SSL Webscockets
+    ncco[1]['endpoint'][0]['uri'] = "ws:"+ngrokurl.split(":")[1]+"/socket"
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(ncco), 'utf-8');
 });
@@ -137,29 +147,24 @@ function wssend(ws, data){
         }
     }
     
-}
-    
-   
-
+}   
 
 // Handle the Websocket
 app.ws('/socket', function(ws, req) {
     console.log("Websocket Connected");
     noble.stopScanning();
-    speaker = new Speaker({
+    var speaker = new Speaker({
                   channels: 1,          
                   bitDepth: 16,         
                   sampleRate: 16000});
-    var micInputStream = micInstance.getAudioStream();
-    micInputStream.pipe(chunker);
-    setTimeout(function(){  micInstance.start(); }, 2000);
+    setTimeout(function(){  micInstance.resume(); }, 2000);
     chunker.on('data', function(chunk) {
         wssend(ws, chunk.data);
     });
     ws.on('message', function(msg) {
      if (isBuffer(msg)) {
          try {
-            speaker.write(msg);
+            speaker.write(msg);        
          }
          catch (e) {
              console.log("Speaker Error: ", e)
@@ -178,8 +183,9 @@ app.ws('/socket', function(ws, req) {
     });
     ws.on('close', function(ws){
       console.log("Websocket Closed");
+      chunker.removeListener('data', chunker.listeners('data')[0]);
+      micInstance.pause();
       speaker.end();
-      micInstance.stop();
       noble.startScanning([], true);
   })
 });

@@ -145,6 +145,7 @@ function wssend(ws, data){
 // Handle the Websocket
 app.ws('/socket', function(ws, req) {
     console.log("Websocket Connected");
+    noble.stopScanning();
     speaker = new Speaker({
                   channels: 1,          
                   bitDepth: 16,         
@@ -178,7 +179,8 @@ app.ws('/socket', function(ws, req) {
     ws.on('close', function(ws){
       console.log("Websocket Closed");
       speaker.end();
-      micInstance.stop()
+      micInstance.stop();
+      noble.startScanning([], true);
   })
 });
 

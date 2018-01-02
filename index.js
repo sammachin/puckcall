@@ -34,7 +34,8 @@ ngrok.once('connect', function (url) {
     ngrokurl = url;
     console.log("Ngrok connected as: ", ngrokurl);
 });
-ngrok.connect(8000);
+ngrok.connect({ addr: 8000,
+                region: 'eu'});
 
 // Watch for BLE Button events
 var noble = require('noble');

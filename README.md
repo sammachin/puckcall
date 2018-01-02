@@ -43,6 +43,7 @@ Now press the button on the puck, the light should go green and you will see the
 
 ## Demo Videos
 Here's a video of the project running on a Pi
-https://drive.google.com/file/d/1eSnk0VZb9iHh3JJH75wnlFMPPev5mr_1/view?usp=sharing
+https://drive.google.com/file/d/1eSnk0VZb9iHh3JJH75wnlFMPPev5mr_1/view
+
 And this is a screen recording of it running on a mac
 https://drive.google.com/file/d/1HytTFUCu9KMqYbEkwh2pPsJIpCmkZIKZ/view

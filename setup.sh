@@ -8,9 +8,7 @@ apt-get install npm
 apt-get install mpg123
 npm install -g node-gyp
 
-
 echo "defaults.pcm.card 1" >>  /etc/asound.conf
 echo "defaults.ctl.card 1" >> /etc/asound.conf
    
    
-npm install
